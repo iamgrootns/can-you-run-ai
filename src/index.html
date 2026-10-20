@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; img-src 'self' data:; media-src 'self' data:"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Can You Run AI</title>
+    <meta name="theme-color" content="#121416" />
+    <link rel="stylesheet" href="styles/app.css" />
+  </head>
+  <body class="gate-open">
+    <div id="gate" class="gate" role="dialog" aria-modal="true" aria-labelledby="gate-title">
+      <div class="gate-stage" id="gate-stage">
+        <div class="gate-seq-wrap" id="gate-seq-wrap">
+          <video
+            id="gate-seq"
+            class="gate-seq"
+            src="media/gate.mp4"
+            poster="media/gate-poster.jpg"
+            muted
+            playsinline
+            preload="auto"
+            aria-hidden="true"
+          ></video>
+        </div>
+        <div class="gate-vignette" aria-hidden="true"></div>
+      </div>
+      <div class="gate-copy">
+        <p class="gate-brand" translate="no">Can You Run <em>AI</em></p>
+        <h1 id="gate-title">This machine.<br />These models.</h1>
+        <p class="gate-sub">Check what fits. Download it. Run it here.</p>
+        <div class="gate-actions">
+          <button type="button" class="gate-cta" id="btn-gate-enter">Get Started</button>
+          <button type="button" class="gate-skip" id="btn-gate-skip">Skip</button>
+        </div>
+      </div>
+      <div class="gate-scrub" aria-hidden="true"><i id="gate-scrub-fill"></i></div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">CAN YOU RUN <em>AI</em></div>
+      <nav class="tabs" id="tabs">
+        <button type="button" class="tab" data-view="home">Home</button>
+        <button type="button" class="tab" data-view="explore">Explore</button>
+        <button type="button" class="tab" data-view="library">Library</button>
+      </nav>
+      <div class="topbar-right">
+        <span id="net-pill" class="pill">…</span>
+        <button type="button" id="btn-rescan" class="btn ghost">Rescan</button>
+      </div>
+    </header>
+
+    <div id="toast" class="toast" hidden></div>
+
+    <main>
+      <!-- ───────── HOME ───────── -->
+      <section id="view-home" class="view">
+        <div id="onboarding" class="onboarding" hidden>
+          <p><strong>Can You Run AI</strong> checks this PC against Hugging Face, downloads what fits, and runs it here when we have an adapter — Talk, See, Hear, Embed, Rank. Offline, no cloud. If we can't run it, we say so and still let you download.</p>
+          <button type="button" id="btn-onboarding-dismiss" class="link">Got it</button>
+        </div>
+        <div class="hero">
+          <div class="hero-label">Your machine, right now</div>
+          <div class="hero-row">
+            <div class="hero-number-wrap">
+              <span class="hero-number" id="hero-number">—</span>
+              <span class="hero-unit">B params</span>
+            </div>
+            <p class="hero-sub" id="hero-sub">Detecting hardware…</p>
+          </div>
+          <div id="hero-specs" class="hero-specs"></div>
+        </div>
+
+        <div class="cap-block">
+          <div class="row between">
+            <h2 class="cap-title">What this PC can do</h2>
+            <button type="button" id="btn-copy-passport" class="link sm-text">Copy machine passport</button>
+          </div>
+          <div id="cap-map" class="cap-map"></div>
+          <p id="unlock-line" class="sm-text muted"></p>
+        </div>
+
+        <div class="job-tiles" id="job-tiles">
+          <button type="button" class="job-tile" data-job="talk" data-pipeline="text-generation">
+            <b>Talk</b><span>Chat models this PC can run</span>
+          </button>
+          <button type="button" class="job-tile" data-job="see" data-pipeline="text-to-image">
+            <b>See</b><span>Image models this app can actually generate</span>
+          </button>
+          <button type="button" class="job-tile" data-job="hear" data-pipeline="automatic-speech-recognition">
+            <b>Transcribe</b><span>Speech → text (whisper)</span>
+          </button>
+          <button type="button" class="job-tile" data-job="speak" data-pipeline="text-to-speech">
+            <b>Speak</b><span>Text → speech (piper)</span>
+          </button>
+          <button type="button" class="job-tile" data-job="embed" data-pipeline="feature-extraction">
+            <b>Embed</b><span>Embedding models this app can actually vectorize</span>
+          </button>
+          <button type="button" class="job-tile" data-job="rerank" data-pipeline="text-ranking">
+            <b>Rank</b><span>Reranker models this app can actually score</span>
+          </button>
+        </div>
+
+        <div class="home-section">
+          <div class="home-section-head">
+            <h2>Recommended for you</h2>
+            <span class="muted sm-text" id="reco-meta"></span>
+          </div>
+          <div id="reco-list" class="reco-list">
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+            <div class="skeleton-row"></div>
+          </div>
+        </div>
+
+        <div class="home-section" id="continue-section" hidden>
+          <div class="home-section-head"><h2>Continue where you left off</h2></div>
+          <div id="continue-list" class="reco-list"></div>
+        </div>
+      </section>
+
+      <!-- ───────── EXPLORE ───────── -->
+      <section id="view-explore" class="view" hidden>
+        <div class="explore-layout">
+          <div class="col explore-list-col">
+            <div class="filters">
+              <select id="cat"></select>
+              <select id="sort">
+                <option value="downloads">Downloads</option>
+                <option value="likes">Likes</option>
+                <option value="lastModified">Updated</option>
+                <option value="trendingScore">Trending</option>
+                <option value="fit">Best fit for you</option>
+              </select>
+              <select id="lib"><option value="">Any library</option></select>
+              <input id="q" type="search" placeholder="Search Hub…" />
+              <button type="button" id="btn-go" class="btn primary">Search</button>
+            </div>
+            <div class="row between">
+              <div class="row gap">
+                <label class="check"
+                  ><input type="checkbox" id="fits-only" /> Fits my machine only</label
+                >
+                <label class="check"
+                  ><input type="checkbox" id="runnable-only" /> Runnable in this app only</label
+                >
+              </div>
+              <div class="row gap">
+                <button type="button" id="btn-cached" class="link sm-text">Offline cache</button>
+                <button type="button" id="btn-check" class="btn ghost" disabled>Check page</button>
+              </div>
+            </div>
+            <div id="meta" class="muted sm-text">—</div>
+            <div id="models" class="list"></div>
+            <div class="row between pager">
+              <button type="button" id="prev" class="btn ghost" disabled>Prev</button>
+              <span id="page">1</span>
+              <button type="button" id="next" class="btn ghost" disabled>Next</button>
+            </div>
+          </div>
+
+          <div class="col explore-detail-col">
+            <div id="detail" class="muted">Select a model on the left to see if it fits your machine.</div>
+            <div id="dl-progress" class="progress" hidden><i></i></div>
+            <div class="row between" id="dl-status-row" hidden>
+              <div id="dl-txt" class="sm-text muted"></div>
+              <button type="button" id="btn-cancel-dl" class="link sm-text">Cancel</button>
+            </div>
+
+            <div id="compare-panel" class="compare-panel" hidden>
+              <div class="row between">
+                <h2>Compare</h2>
+                <button type="button" id="btn-compare-clear" class="link sm-text">Clear</button>
+              </div>
+              <div id="compare-table"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───────── LIBRARY & CHAT ───────── -->
+      <section id="view-library" class="view" hidden>
+        <div class="library-layout">
+          <div class="col library-list-col">
+            <div class="row between">
+              <h2>Downloaded</h2>
+              <button type="button" id="btn-open-models" class="link sm-text">Folder</button>
+            </div>
+            <div id="local-list" class="list sm"></div>
+          </div>
+
+          <div class="col library-main-col">
+            <div id="chat-empty" class="chat-empty">
+              <p>Pick a downloaded Talk model to chat. See / Transcribe / Speak / Embed / Rank open their studio in Explore.</p>
+              <p class="sm-text muted">Nothing here yet? <button type="button" class="link" id="link-to-explore">Explore</button> or use Home recommendations.</p>
+            </div>
+
+            <div id="chat-panel" class="chat-panel" hidden>
+              <div class="chat-header">
+                <div>
+                  <div class="chat-title" id="chat-title"></div>
+                  <div id="chat-status" class="sm-text muted">Not loaded</div>
+                </div>
+                <div class="row gap">
+                  <button type="button" id="btn-chat-unload" class="btn ghost" hidden>Unload</button>
+                  <button type="button" id="btn-lib-folder" class="btn ghost">Folder</button>
+                  <button type="button" id="btn-chat-remove" class="btn danger">Remove</button>
+                </div>
+              </div>
+
+              <div id="chat-runnable">
+                <details class="tech chat-advanced">
+                  <summary>Advanced</summary>
+                  <div class="adv-grid">
+                    <label>System prompt
+                      <textarea id="adv-system-prompt" rows="2" placeholder="Optional — e.g. &quot;Answer concisely.&quot;"></textarea>
+                    </label>
+                    <label>Context length
+                      <select id="adv-context-size">
+                        <option value="">Auto</option>
+                        <option value="4096">4096</option>
+                        <option value="8192">8192</option>
+                        <option value="16384">16384</option>
+                        <option value="32768">32768</option>
+                      </select>
+                    </label>
+                    <label>GPU layers
+                      <select id="adv-gpu-layers">
+                        <option value="">Auto</option>
+                        <option value="max">Max (full GPU)</option>
+                        <option value="0">CPU only</option>
+                      </select>
+                    </label>
+                    <label>Temperature: <span id="adv-temp-val">0.7</span>
+                      <input type="range" id="adv-temperature" min="0" max="1.5" step="0.1" value="0.7" />
+                    </label>
+                    <label>JSON schema (optional — forces the reply to match)
+                      <textarea id="adv-json-schema" rows="3" placeholder='{"type":"object","properties":{"name":{"type":"string"}},"required":["name"]}'></textarea>
+                    </label>
+                  </div>
+                  <p class="sm-text muted">System prompt / context / GPU layers reload the model. JSON schema applies per send (no reload).</p>
+                </details>
+                <div id="chat-log" class="chat-log"></div>
+                <form id="chat-form" class="chat-form">
+                  <input id="chat-input" type="text" placeholder="Ask something…" autocomplete="off" />
+                  <button type="submit" id="btn-chat-send" class="btn primary">Send</button>
+                  <button type="button" id="btn-chat-stop" class="btn danger" hidden>Stop</button>
+                </form>
+              </div>
+
+              <div id="chat-noninfer" class="chat-noninfer" hidden>
+                <p>This format doesn't chat. If we have an adapter (See / Hear / Embed / Rank), open Explore to run it. Otherwise the files are on disk for your own tools.</p>
+                <button type="button" id="btn-lib-hub" class="link">View on Hugging Face</button>
+              </div>
+
+              <div id="lib-studio" class="chat-noninfer" hidden></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>Talk · See · Transcribe · Speak · Embed · Rank run in this app when an adapter fits. Everything else: download only. No hardcoded models.</footer>
+    <script src="js/app.js"></script>
+  </body>
+</html>

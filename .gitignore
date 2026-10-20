@@ -1,0 +1,9 @@
+node_modules/
+release/
+dist/
+*.log
+.DS_Store
+Thumbs.db
+backupv1.zip
+grokplan.md
+mixedplan.md

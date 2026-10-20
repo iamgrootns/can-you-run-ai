@@ -1,0 +1,69 @@
+{
+  "name": "can-you-run-ai",
+  "version": "1.0.0",
+  "description": "Can You Run It — for AI models. Detect your hardware, browse Hugging Face by category, and see which models fit your machine. No hardcoded model lists.",
+  "main": "electron/main.js",
+  "author": "CanYouRunAI",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "selftest": "electron . --selftest",
+    "smoke": "node scripts/smoke.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "dependencies": {
+    "@huggingface/gguf": "^0.4.6",
+    "node-llama-cpp": "^3.19.1",
+    "systeminformation": "^5.25.11"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.canyourunai.app",
+    "productName": "Can You Run AI",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**/*",
+      "src/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/node-llama-cpp/**/*",
+      "node_modules/@node-llama-cpp/**/*",
+      "src/media/**/*",
+      "electron/adapters/py/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Development"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
